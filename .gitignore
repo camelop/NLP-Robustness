@@ -2,3 +2,7 @@ log.txt
 model/*
 runs/*
 data/*
+amazon_split/*
+.vscode
+focus.json
+focus.pickle

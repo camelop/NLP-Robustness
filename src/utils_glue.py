@@ -255,6 +255,34 @@ class StsbProcessor(DataProcessor):
                 InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
         return examples
 
+class AmazonProcessor(DataProcessor):
+    """Processor for the Amazon data set."""
+
+    def get_train_examples(self, data_dir):
+        """See base class."""
+        return self._create_examples(
+            self._read_tsv(os.path.join(data_dir, "train.tsv")), "train")
+
+    def get_dev_examples(self, data_dir):
+        """See base class."""
+        return self._create_examples(
+            self._read_tsv(os.path.join(data_dir, "dev.tsv")), "dev")
+
+    def get_labels(self):
+        """See base class."""
+        return [None]
+
+    def _create_examples(self, lines, set_type):
+        """Creates examples for the training and dev sets."""
+        examples = []
+        for (i, line) in enumerate(lines):
+            guid = "%s-%s" % (set_type, line[0])
+            text_a = line[2]
+            label = line[1]
+            examples.append(
+                InputExample(guid=guid, text_a=text_a, label=label))
+        return examples
+
 
 class QqpProcessor(DataProcessor):
     """Processor for the QQP data set (GLUE version)."""
@@ -556,9 +584,7 @@ def compute_metrics(task_name, preds, labels):
         return pearson_and_spearman(preds, labels)
     elif task_name == "qqp":
         return acc_and_f1(preds, labels)
-    elif task_name == "mnli":
-        return {"acc": simple_accuracy(preds, labels)}
-    elif task_name == "mnli-mm":
+    elif task_name.startswith("mnli"): # modified
         return {"acc": simple_accuracy(preds, labels)}
     elif task_name == "qnli":
         return {"acc": simple_accuracy(preds, labels)}
@@ -566,12 +592,17 @@ def compute_metrics(task_name, preds, labels):
         return {"acc": simple_accuracy(preds, labels)}
     elif task_name == "wnli":
         return {"acc": simple_accuracy(preds, labels)}
+    elif task_name.startswith("amazon"): # added
+        return pearson_and_spearman(preds, labels) # added
     else:
         raise KeyError(task_name)
 
 processors = {
     "cola": ColaProcessor,
     "mnli": MnliProcessor,
+    "mnli-telephone": MnliProcessor, # added
+    "mnli-letters": MnliProcessor, # added
+    "mnli-facetoface": MnliProcessor, # added
     "mnli-mm": MnliMismatchedProcessor,
     "mrpc": MrpcProcessor,
     "sst-2": Sst2Processor,
@@ -589,11 +620,30 @@ processors = {
     "qnli": QnliProcessor,
     "rte": RteProcessor,
     "wnli": WnliProcessor,
+    "amazon-c": AmazonProcessor, # added
+    "amazon-wc": AmazonProcessor, # added
+    "amazon-mc": AmazonProcessor, # added
+    "amazon-bc": AmazonProcessor, # added
+    "amazon-s": AmazonProcessor, # added
+    "amazon-ms": AmazonProcessor, # added
+    "amazon-mv": AmazonProcessor, # added
+    "amazon-b": AmazonProcessor, # added
+    "amazon-c-sample": AmazonProcessor, # added
+    "amazon-wc-sample": AmazonProcessor, # added
+    "amazon-mc-sample": AmazonProcessor, # added
+    "amazon-bc-sample": AmazonProcessor, # added
+    "amazon-s-sample": AmazonProcessor, # added
+    "amazon-ms-sample": AmazonProcessor, # added
+    "amazon-mv-sample": AmazonProcessor, # added
+    "amazon-b-sample": AmazonProcessor, # added
 }
 
 output_modes = {
     "cola": "classification",
     "mnli": "classification",
+    "mnli-telephone": "classification", # added
+    "mnli-letters": "classification", # added
+    "mnli-facetoface": "classification", # added
     "mnli-mm": "classification",
     "mrpc": "classification",
     "sst-2": "classification",
@@ -611,11 +661,30 @@ output_modes = {
     "qnli": "classification",
     "rte": "classification",
     "wnli": "classification",
+    "amazon-c": "regression", # added
+    "amazon-wc": "regression", # added
+    "amazon-mc": "regression", # added
+    "amazon-bc": "regression", # added
+    "amazon-s": "regression", # added
+    "amazon-ms": "regression", # added
+    "amazon-mv": "regression", # added
+    "amazon-b": "regression", # added
+    "amazon-c-sample": "regression", # added
+    "amazon-wc-sample": "regression", # added
+    "amazon-mc-sample": "regression", # added
+    "amazon-bc-sample": "regression", # added
+    "amazon-s-sample": "regression", # added
+    "amazon-ms-sample": "regression", # added
+    "amazon-mv-sample": "regression", # added
+    "amazon-b-sample": "regression", # added
 }
 
 GLUE_TASKS_NUM_LABELS = {
     "cola": 2,
     "mnli": 3,
+    "mnli-telephone": 3, # added
+    "mnli-letters": 3, # added
+    "mnli-facetoface": 3, # added
     "mrpc": 2,
     "sst-2": 2,
     "imdb": 2, # added
@@ -632,4 +701,20 @@ GLUE_TASKS_NUM_LABELS = {
     "qnli": 2,
     "rte": 2,
     "wnli": 2,
+    "amazon-c": 1, # added
+    "amazon-wc": 1, # added
+    "amazon-mc": 1, # added
+    "amazon-bc": 1, # added
+    "amazon-s": 1, # added
+    "amazon-ms": 1, # added
+    "amazon-mv": 1, # added
+    "amazon-b": 1, # added
+    "amazon-c-sample": 1, # added
+    "amazon-wc-sample": 1, # added
+    "amazon-mc-sample": 1, # added
+    "amazon-bc-sample": 1, # added
+    "amazon-s-sample": 1, # added
+    "amazon-ms-sample": 1, # added
+    "amazon-mv-sample": 1, # added
+    "amazon-b-sample": 1, # added
 }
