@@ -270,7 +270,7 @@ class AmazonProcessor(DataProcessor):
 
     def get_labels(self):
         """See base class."""
-        return [None]
+        return ["1.0", "2.0", "3.0", "4.0", "5.0"]
 
     def _create_examples(self, lines, set_type):
         """Creates examples for the training and dev sets."""
@@ -593,7 +593,8 @@ def compute_metrics(task_name, preds, labels):
     elif task_name == "wnli":
         return {"acc": simple_accuracy(preds, labels)}
     elif task_name.startswith("amazon"): # added
-        return pearson_and_spearman(preds, labels) # added
+        # return pearson_and_spearman(preds, labels) # added
+        return {"acc": simple_accuracy(preds, labels)} # added
     else:
         raise KeyError(task_name)
 
@@ -636,6 +637,14 @@ processors = {
     "amazon-ms-sample": AmazonProcessor, # added
     "amazon-mv-sample": AmazonProcessor, # added
     "amazon-b-sample": AmazonProcessor, # added
+    "amazon-c-sample2": AmazonProcessor, # added
+    "amazon-wc-sample2": AmazonProcessor, # added
+    "amazon-mc-sample2": AmazonProcessor, # added
+    "amazon-bc-sample2": AmazonProcessor, # added
+    "amazon-s-sample2": AmazonProcessor, # added
+    "amazon-ms-sample2": AmazonProcessor, # added
+    "amazon-mv-sample2": AmazonProcessor, # added
+    "amazon-b-sample2": AmazonProcessor, # added
 }
 
 output_modes = {
@@ -661,22 +670,38 @@ output_modes = {
     "qnli": "classification",
     "rte": "classification",
     "wnli": "classification",
-    "amazon-c": "regression", # added
-    "amazon-wc": "regression", # added
-    "amazon-mc": "regression", # added
-    "amazon-bc": "regression", # added
-    "amazon-s": "regression", # added
-    "amazon-ms": "regression", # added
-    "amazon-mv": "regression", # added
-    "amazon-b": "regression", # added
-    "amazon-c-sample": "regression", # added
-    "amazon-wc-sample": "regression", # added
-    "amazon-mc-sample": "regression", # added
-    "amazon-bc-sample": "regression", # added
-    "amazon-s-sample": "regression", # added
-    "amazon-ms-sample": "regression", # added
-    "amazon-mv-sample": "regression", # added
-    "amazon-b-sample": "regression", # added
+    # "amazon-c": "regression", # added
+    # "amazon-wc": "regression", # added
+    # "amazon-mc": "regression", # added
+    # "amazon-bc": "regression", # added
+    # "amazon-s": "regression", # added
+    # "amazon-ms": "regression", # added
+    # "amazon-mv": "regression", # added
+    # "amazon-b": "regression", # added
+    # "amazon-c-sample": "regression", # added
+    # "amazon-wc-sample": "regression", # added
+    # "amazon-mc-sample": "regression", # added
+    # "amazon-bc-sample": "regression", # added
+    # "amazon-s-sample": "regression", # added
+    # "amazon-ms-sample": "regression", # added
+    # "amazon-mv-sample": "regression", # added
+    # "amazon-b-sample": "regression", # added
+    "amazon-c-sample": "classification", # added
+    "amazon-wc-sample": "classification", # added
+    "amazon-mc-sample": "classification", # added
+    "amazon-bc-sample": "classification", # added
+    "amazon-s-sample": "classification", # added
+    "amazon-ms-sample": "classification", # added
+    "amazon-mv-sample": "classification", # added
+    "amazon-b-sample": "classification", # added
+    "amazon-c-sample2": "classification", # added
+    "amazon-wc-sample2": "classification", # added
+    "amazon-mc-sample2": "classification", # added
+    "amazon-bc-sample2": "classification", # added
+    "amazon-s-sample2": "classification", # added
+    "amazon-ms-sample2": "classification", # added
+    "amazon-mv-sample2": "classification", # added
+    "amazon-b-sample2": "classification", # added
 }
 
 GLUE_TASKS_NUM_LABELS = {
@@ -701,20 +726,28 @@ GLUE_TASKS_NUM_LABELS = {
     "qnli": 2,
     "rte": 2,
     "wnli": 2,
-    "amazon-c": 1, # added
-    "amazon-wc": 1, # added
-    "amazon-mc": 1, # added
-    "amazon-bc": 1, # added
-    "amazon-s": 1, # added
-    "amazon-ms": 1, # added
-    "amazon-mv": 1, # added
-    "amazon-b": 1, # added
-    "amazon-c-sample": 1, # added
-    "amazon-wc-sample": 1, # added
-    "amazon-mc-sample": 1, # added
-    "amazon-bc-sample": 1, # added
-    "amazon-s-sample": 1, # added
-    "amazon-ms-sample": 1, # added
-    "amazon-mv-sample": 1, # added
-    "amazon-b-sample": 1, # added
+    "amazon-c": 5, # added
+    "amazon-wc": 5, # added
+    "amazon-mc": 5, # added
+    "amazon-bc": 5, # added
+    "amazon-s": 5, # added
+    "amazon-ms": 5, # added
+    "amazon-mv": 5, # added
+    "amazon-b": 5, # added
+    "amazon-c-sample": 5, # added
+    "amazon-wc-sample": 5, # added
+    "amazon-mc-sample": 5, # added
+    "amazon-bc-sample": 5, # added
+    "amazon-s-sample": 5, # added
+    "amazon-ms-sample": 5, # added
+    "amazon-mv-sample": 5, # added
+    "amazon-b-sample": 5, # added
+    "amazon-c-sample2": 5, # added
+    "amazon-wc-sample2": 5, # added
+    "amazon-mc-sample2": 5, # added
+    "amazon-bc-sample2": 5, # added
+    "amazon-s-sample2": 5, # added
+    "amazon-ms-sample2": 5, # added
+    "amazon-mv-sample2": 5, # added
+    "amazon-b-sample2": 5, # added
 }
