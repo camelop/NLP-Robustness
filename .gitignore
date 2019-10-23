@@ -2,7 +2,9 @@ log.txt
 model/*
 runs/*
 data/*
+results/*
 amazon_split/*
 .vscode
 focus.json
 focus.pickle
+*.pyc

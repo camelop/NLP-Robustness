@@ -1,0 +1,1 @@
+['bert-base-uncased[sst-2]', 'bert-base-uncased[imdb]', 'bert-base-uncased[sts-b-msrvid]', 'bert-base-uncased[sts-b-msrpar]', 'bert-base-uncased[sts-b-headlines]', 'bert-base-uncased[sts-b-images]']
