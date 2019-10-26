@@ -5,8 +5,8 @@
     "validation_dataset_reader": {
         "type": "binary_sentiment"
     },
-    "train_data_path": "./data/SST-2/train.tsv",
-    "validation_data_path": "./data/SST-2/dev.tsv",
+    "train_data_path": "./data/IMDB/train.tsv",
+    "validation_data_path": "./data/IMDB/dev.tsv",
     "model": {
         "type": "basic_classifier",
         "text_field_embedder": {
@@ -34,12 +34,12 @@
     "trainer": {
         "num_epochs": 16,
         "patience": 4,
-        "grad_norm": 5.0,
+        "grad_norm": 4.0,
         "validation_metric": "+accuracy",
-        "cuda_device": 7,
+        "cuda_device": 0,
         "optimizer": {
             "type": "adam",
-            "lr": 1e-4
+            "lr": 1e-3
         }
     }
 }

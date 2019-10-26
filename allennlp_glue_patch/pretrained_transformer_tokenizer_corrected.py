@@ -53,7 +53,11 @@ class CorrectedPretrainedTransformerTokenizer(Tokenizer):
     def tokenize(self, text: str) -> List[Token]:
         # TODO(mattg): track character offsets.  Might be too challenging to do it here, given that
         # pytorch-transformers is dealing with the whitespace...
-        token_strings = self._start_tokens + self._tokenizer.tokenize(text) + self._end_tokens
+        length_limit = 256-2
+        tokenized = self._tokenizer.tokenize(text)
+        if len(tokenized) >= length_limit:
+            tokenized = tokenized[:length_limit]
+        token_strings = self._start_tokens + tokenized + self._end_tokens
         return [Token(t) for t in token_strings]
 
 

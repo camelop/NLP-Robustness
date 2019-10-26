@@ -14,17 +14,16 @@
                 "tokens": {
                     "type": "embedding",
                     "embedding_dim": 300,
-                    "pretrained_file": "https://allennlp.s3.amazonaws.com/datasets/glove/glove.840B.300d.txt.gz",
+                    "pretrained_file": "https://allennlp.s3.amazonaws.com/datasets/word2vec/GoogleNews-vectors-negative300.txt.gz",
                     "trainable": false
                 }
             }
         },
         "seq2vec_encoder": {
-            "type": "lstm",
-            "input_size": 300,
-            "hidden_size": 512,
-            "num_layers": 2,
-            "batch_first": true
+            "type": "cnn",
+            "embedding_dim": 300,
+            "num_filters": 1024,
+            "ngram_filter_sizes": [2, 3, 4, 5]
         }
     },
     "iterator": {
@@ -34,12 +33,12 @@
     "trainer": {
         "num_epochs": 16,
         "patience": 4,
-        "grad_norm": 5.0,
+        "grad_norm": 4.0,
         "validation_metric": "+accuracy",
-        "cuda_device": 7,
+        "cuda_device": 0,
         "optimizer": {
             "type": "adam",
-            "lr": 1e-4
+            "lr": 5e-4
         }
     }
 }

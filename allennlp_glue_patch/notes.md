@@ -7,18 +7,20 @@ alias allennlp='python -m allennlp.run'
 ```
 - cannot use roberta tokenizer
     - bug from pytorch-transformers
-        - change tokenization_auto.py, line 88 into:
+        - change tokenization_auto.py, line 88 to:
         ```
                 if 'bert' in pretrained_model_name_or_path and 'roberta' not in pretrained_model_name_or_path:
         ```
-        - change modeling_auto.py, line 113 into:
+        - change modeling_auto.py, line 113 to:
         ```
                 if 'bert' in pretrained_model_name_or_path and 'roberta' not in pretrained_model_name_or_path:
         ```
-        - change modeling_auto.py, line 228 into:
+        - change modeling_auto.py, line 228 to:
         ```
                 if 'bert' in pretrained_model_name_or_path and 'roberta' not in pretrained_model_name_or_path:
         ```
+- Stop Iteration in RNN
+    - Do not set lstm layer num to 0
 
 ## Commands
 - Train a model
