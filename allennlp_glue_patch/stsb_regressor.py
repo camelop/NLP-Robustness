@@ -10,9 +10,9 @@ from allennlp.nn import InitializerApplicator, RegularizerApplicator
 from allennlp.nn.util import get_text_field_mask
 from allennlp.training.metrics import PearsonCorrelation
 
-# TODO: CHECK THE COMPATIBILITY WITH BERT
-@Model.register("basic_regressor")
-class BasicRegressor(Model):
+
+@Model.register("stsb_regressor")
+class STSBRegressor(Model):
     """
     This ``Model`` implements a basic text regressor. After embedding the text into
     a text field, we will optionally encode the embeddings with a ``Seq2SeqEncoder``. The
@@ -63,10 +63,13 @@ class BasicRegressor(Model):
             self._seq2seq_encoder = None
 
         self._seq2vec_encoder = seq2vec_encoder
-        self._classifier_input_dim = self._seq2vec_encoder.get_output_dim()
+
+        self._classifier_input_dim = self._seq2vec_encoder.get_output_dim() * 2  # run encoder seperately and concat the result
 
         if dropout:
             self._dropout = torch.nn.Dropout(dropout)
+            self._dropout_a = torch.nn.Dropout(dropout)
+            self._dropout_b = torch.nn.Dropout(dropout)
         else:
             self._dropout = None
 
@@ -74,14 +77,24 @@ class BasicRegressor(Model):
 
         self._num_labels = 1  # because we're running a regression task
         self._scale = scale
+        self.__first = True
 
+        self._mlp_dims = [self._classifier_input_dim] * 3
+        self._mlp_layers = torch.nn.ModuleList()
+        for i, j in zip(self._mlp_dims, self._mlp_dims[1:]):
+            self._mlp_layers.append(torch.nn.Linear(i, j))
+            self._mlp_layers.append(torch.nn.ReLU())
+            if dropout:
+                self._mlp_layers.append(torch.nn.Dropout(dropout))
         self._classification_layer = torch.nn.Linear(self._classifier_input_dim, self._num_labels)
         self._metric = PearsonCorrelation()
+        self._similarity = torch.nn.CosineSimilarity()
         self._loss = torch.nn.MSELoss()
         initializer(self)
 
     def forward(self,  # type: ignore
-                tokens: Dict[str, torch.LongTensor],
+                tokens_a: Dict[str, torch.LongTensor],
+                tokens_b: Dict[str, torch.LongTensor],
                 label: torch.IntTensor = None) -> Dict[str, torch.Tensor]:
         # pylint: disable=arguments-differ
         """
@@ -102,18 +115,38 @@ class BasicRegressor(Model):
         loss : torch.FloatTensor, optional
             A scalar loss to be optimised.
         """
+        tokens = {"tokens_a": tokens_a["tokens_a"], "tokens_b": tokens_b["tokens_b"]}  
+        if self.__first:
+            self.__first = False
+            print("tokens: \n")
+            print(tokens)
+        # I don't know why tokens_a and tokens_b both includes keys named by each other
+        tokens_a = {"tokens_a": tokens_a["tokens_a"]}
+        tokens_b = {"tokens_b": tokens_b["tokens_b"]}
         embedded_text = self._text_field_embedder(tokens)
-        mask = get_text_field_mask(tokens).float()
+        embedded_text_a = embedded_text["tokens_a"]  # TODO: check the shape for this
+        mask_a = get_text_field_mask(tokens_a).float()
+        embedded_text_b = embedded_text["tokens_b"]
+        mask_b = get_text_field_mask(tokens_b).float()
 
         if self._seq2seq_encoder:
-            embedded_text = self._seq2seq_encoder(embedded_text, mask=mask)
-
-        embedded_text = self._seq2vec_encoder(embedded_text, mask=mask)
-
+            embedded_text_a = self._seq2seq_encoder(embedded_text_a, mask=mask_a)
+            embedded_text_b = self._seq2seq_encoder(embedded_text_b, mask=mask_b)
+            
+        embedded_text_a = self._seq2vec_encoder(embedded_text_a, mask=mask_a)
+        embedded_text_b = self._seq2vec_encoder(embedded_text_b, mask=mask_b)
+        # embedded_text = torch.cat([embedded_text_a, embedded_text_b], dim=-1)
+        
         if self._dropout:
-            embedded_text = self._dropout(embedded_text)
-
+            embedded_text_a = self._dropout_a(embedded_text_a)
+            embedded_text_b = self._dropout_b(embedded_text_b)
+        '''
+        if self._mlp_layers:
+            for l in self._mlp_layers:
+                embedded_text = l(embedded_text)
         logits = self._classification_layer(embedded_text)
+        '''
+        logits = self._similarity(embedded_text_a, embedded_text_b) * 5
         output_dict = {"logits": logits}
 
         if label is not None:  # convert the label into a float number and update the metric
@@ -149,4 +182,3 @@ class BasicRegressor(Model):
     def get_metrics(self, reset: bool = False) -> Dict[str, float]:
         metrics = {'PearsonCorrelation': self._metric.get_metric(reset)}
         return metrics
-

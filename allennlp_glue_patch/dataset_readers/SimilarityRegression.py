@@ -27,7 +27,7 @@ class SimilarityRegressionDatasetReader(DatasetReader):
                 if sys.version_info[0] == 2:
                     line = list(unicode(cell, 'utf-8') for cell in line)
                 lines.append(line)
-            return lines
+            return lines[1:]  # ignore the header
 
     def __init__(
         self,
@@ -37,7 +37,8 @@ class SimilarityRegressionDatasetReader(DatasetReader):
     ) -> None:
         super().__init__(lazy)
         self._tokenizer = tokenizer or WordTokenizer()
-        self._token_indexers = token_indexers or {"tokens": SingleIdTokenIndexer()}
+        #siti = SingleIdTokenIndexer()
+        self._token_indexers = token_indexers or {"tokens_a": SingleIdTokenIndexer(), "tokens_b": SingleIdTokenIndexer()}
 
 
     # TODO: update the following part
@@ -45,13 +46,19 @@ class SimilarityRegressionDatasetReader(DatasetReader):
     def _read(self, file_path: str) -> Iterable[Instance]:
         file_path = cached_path(file_path)
         logger.info("Reading instances from lines in file at: %s", file_path)
-        lines = BinarySentimentDatasetReader._read_tsv(file_path)
+        lines = SimilarityRegressionDatasetReader._read_tsv(file_path)
         for i, line in enumerate(lines):
-            yield self.text_to_instance(i, line[0], line[1])
+            yield self.text_to_instance(i, line[7], line[8], line[-1])
     
-    def text_to_instance(self, index: int, text: str, label: str) -> Instance:
-        tokens = self._tokenizer.tokenize(text)
-        return Instance({
-            "tokens": TextField(tokens, self._token_indexers),
-            "label": LabelField(label)
-        })
+    def text_to_instance(self, index: int, text_a: str, text_b: str, label: str) -> Instance:
+        if "tokens" in self._token_indexers:
+            return Instance({  # use [1:] to skip the second <cls> symbol
+                "tokens": TextField(self._tokenizer.tokenize(text_a) + self._tokenizer.tokenize(text_b)[1:], self._token_indexers),
+                "label": LabelField(label)
+            })
+        else:  # splitted
+            return Instance({
+                "tokens_a": TextField(self._tokenizer.tokenize(text_a), self._token_indexers),
+                "tokens_b": TextField(self._tokenizer.tokenize(text_b), self._token_indexers),
+                "label": LabelField(label)
+            })

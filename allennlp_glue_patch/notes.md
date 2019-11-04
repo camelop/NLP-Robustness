@@ -45,4 +45,6 @@ rm -rf model/test-cnn-bow[sst-2] && allennlp train config/test/sst-cnn-bow.json 
 rm -rf model/test-sum[sst-2] && allennlp train config/test/sst-sum.json -s model/test-sum[sst-2] --include-package allennlp_glue_patch
 rm -rf model/test-bert[sst-2] && allennlp train config/test/sst-bert.jsonnet -s model/test-bert[sst-2] --include-package allennlp_glue_patch
 rm -rf model/test-roberta[sst-2] && allennlp train config/test/sst-roberta.jsonnet -s model/test-roberta[sst-2] --include-package allennlp_glue_patch
+
+allennlp train config/test/headlines-glove-lstm.json -s model/test-headlines --include-package allennlp_glue_patch -f
 ```
