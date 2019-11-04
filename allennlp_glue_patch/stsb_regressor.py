@@ -151,7 +151,7 @@ class STSBRegressor(Model):
 
         if label is not None:  # convert the label into a float number and update the metric
             label_to_str = lambda l: self.vocab.get_index_to_token_vocabulary(self._label_namespace).get(l)
-            label_tensor = torch.tensor([float(label_to_str(int(label[i]))) for i in range(label.shape[0])], device=logits.device)
+            label_tensor = torch.tensor([float(label_to_str(int(label[i]))) for i in range(label.shape[0])], device=logits.device, requires_grad=True)  # make sure loss.backward have something to update
             loss = self._loss(logits.view(-1), label_tensor)
             output_dict["loss"] = loss
             self._metric(logits, label_tensor)
