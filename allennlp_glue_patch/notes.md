@@ -47,4 +47,5 @@ rm -rf model/test-bert[sst-2] && allennlp train config/test/sst-bert.jsonnet -s 
 rm -rf model/test-roberta[sst-2] && allennlp train config/test/sst-roberta.jsonnet -s model/test-roberta[sst-2] --include-package allennlp_glue_patch
 
 allennlp train config/test/headlines-glove-lstm.json -s model/test-headlines --include-package allennlp_glue_patch -f
+allennlp train config/test/stsball-bert.jsonnet -s model/test-stsball --include-package allennlp_glue_patch -f
 ```
