@@ -17,7 +17,7 @@ To correctly use RoBERTa model, see `allennlp_glue_patch/notes.py`.
 If you find this useful in your research, please consider citing:
 
     @inproceedings{hendrycks2020pretrained,
-    Author = {Dan Hendrycks and Xiaoyuan Liu and Eric Wallace and Adam Dziedzic Rishabh Krishnan and Dawn Song},
-    Booktitle = {Association for Computational Linguistics},                            
-    Year = {2020},
-    Title = {Pretrained Transformers Improve Out-of-Distribution Robustness}}
+        Author = {Dan Hendrycks and Xiaoyuan Liu and Eric Wallace and Adam Dziedzic Rishabh Krishnan and Dawn Song},
+        Booktitle = {Association for Computational Linguistics},                            
+        Year = {2020},
+        Title = {Pretrained Transformers Improve Out-of-Distribution Robustness}}
